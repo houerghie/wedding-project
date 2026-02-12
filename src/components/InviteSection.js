@@ -32,8 +32,8 @@ export default function InviteSection({
       aria-label="Détails de l'invitation"
       ref={inviteRef}
     >
+      <HeroSection guest={guest} eventDateTime={eventDateTime} />
       <div className="page">
-        <HeroSection guest={guest} eventDateTime={eventDateTime} />
         <EventDetailsSection countdown={countdown} venue={venue} />
         <StorySection />
         <ScheduleSection />
