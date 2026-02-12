@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -25,7 +25,7 @@ export default function Invitation() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [coverHidden, setCoverHidden] = useState(false);
   const [rsvpMsg, setRsvpMsg] = useState("");
-  const [guest, setGuest] = useState("Guest");
+  const [guest, setGuest] = useState("Invite");
   const [inviteStatus, setInviteStatus] = useState("idle");
 
   const inviteRef = useRef(null);
@@ -52,7 +52,7 @@ export default function Invitation() {
       if (!db) {
         if (isMounted) {
           setInviteStatus("no-config");
-          setGuest("Guest");
+          setGuest("Invite");
         }
         return;
       }
@@ -60,7 +60,7 @@ export default function Invitation() {
       if (!inviteId) {
         if (isMounted) {
           setInviteStatus("missing");
-          setGuest("Guest");
+          setGuest("Invite");
         }
         return;
       }
@@ -73,7 +73,7 @@ export default function Invitation() {
 
         if (!snapshot.exists()) {
           setInviteStatus("invalid");
-          setGuest("Guest");
+          setGuest("Invite");
           return;
         }
 
@@ -81,14 +81,14 @@ export default function Invitation() {
         const invitedName =
           typeof data.guestName === "string" && data.guestName.trim()
             ? data.guestName.trim().slice(0, 40)
-            : "Guest";
+            : "Invite";
 
         setGuest(invitedName);
         setInviteStatus("valid");
       } catch (error) {
         if (isMounted) {
           setInviteStatus("error");
-          setGuest("Guest");
+          setGuest("Invite");
         }
       }
     };
@@ -137,16 +137,16 @@ export default function Invitation() {
 
   const handleRsvp = async (event) => {
     event.preventDefault();
-    setRsvpMsg("Sending...");
+    setRsvpMsg("Envoi en cours...");
 
     const form = formRef.current;
     if (!form) return;
     if (!db) {
-      setRsvpMsg("RSVP is not configured yet. Add Firebase env variables.");
+      setRsvpMsg("Le RSVP n'est pas encore configure. Ajoutez les variables Firebase.");
       return;
     }
     if (!inviteId || inviteStatus !== "valid") {
-      setRsvpMsg("This invitation link is invalid.");
+      setRsvpMsg("Ce lien d'invitation est invalide.");
       return;
     }
 
@@ -169,14 +169,14 @@ export default function Invitation() {
         }
         transaction.set(rsvpRef, payload);
       });
-      setRsvpMsg("RSVP sent successfully.");
+      setRsvpMsg("RSVP envoye avec succes.");
       form.reset();
     } catch (error) {
       if (error instanceof Error && error.message === "already-submitted") {
-        setRsvpMsg("RSVP already submitted for this invitation.");
+        setRsvpMsg("Le RSVP a deja ete envoye pour cette invitation.");
         return;
       }
-      setRsvpMsg("Could not send RSVP. Please try again.");
+      setRsvpMsg("Impossible d'envoyer le RSVP. Veuillez reessayer.");
     }
   };
 

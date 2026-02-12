@@ -15,8 +15,8 @@ export default function AdminInvitesPage() {
   const [name, setName] = useState("");
   const [resultUrl, setResultUrl] = useState("");
   const [status, setStatus] = useState("");
-  const [tableStatus, setTableStatus] = useState("Loading RSVPs...");
-  const [invitationStatus, setInvitationStatus] = useState("Loading invitations...");
+  const [tableStatus, setTableStatus] = useState("Chargement des RSVP...");
+  const [invitationStatus, setInvitationStatus] = useState("Chargement des invitations...");
   const [actionStatus, setActionStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rsvps, setRsvps] = useState([]);
@@ -27,11 +27,11 @@ export default function AdminInvitesPage() {
 
   const loadRsvps = async () => {
     if (!db) {
-      setTableStatus("Firebase is not configured.");
+      setTableStatus("Firebase n'est pas configuré.");
       return;
     }
 
-    setTableStatus("Loading RSVPs...");
+    setTableStatus("Chargement des RSVP...");
     try {
       const snapshot = await getDocs(collection(db, "rsvps"));
       const rows = snapshot.docs.map((item) => {
@@ -45,19 +45,19 @@ export default function AdminInvitesPage() {
         };
       });
       setRsvps(rows);
-      setTableStatus(rows.length ? "" : "No RSVPs yet.");
+      setTableStatus(rows.length ? "" : "Aucun RSVP pour le moment.");
     } catch (error) {
-      setTableStatus("Could not load RSVPs.");
+      setTableStatus("Impossible de charger les RSVP.");
     }
   };
 
   const loadInvitations = async () => {
     if (!db) {
-      setInvitationStatus("Firebase is not configured.");
+      setInvitationStatus("Firebase n'est pas configuré.");
       return;
     }
 
-    setInvitationStatus("Loading invitations...");
+    setInvitationStatus("Chargement des invitations...");
     try {
       const snapshot = await getDocs(collection(db, "invitations"));
       const rows = snapshot.docs.map((item) => {
@@ -67,14 +67,14 @@ export default function AdminInvitesPage() {
           guestName:
             typeof data.guestName === "string" && data.guestName.trim()
               ? data.guestName.trim()
-              : "Guest"
+              : "Invité"
         };
       });
       rows.sort((a, b) => a.guestName.localeCompare(b.guestName));
       setInvitations(rows);
-      setInvitationStatus(rows.length ? "" : "No invitations yet.");
+      setInvitationStatus(rows.length ? "" : "Aucune invitation pour le moment.");
     } catch (error) {
-      setInvitationStatus("Could not load invitations.");
+      setInvitationStatus("Impossible de charger les invitations.");
     }
   };
 
@@ -114,22 +114,22 @@ export default function AdminInvitesPage() {
     const inviteUrl = getInviteUrl(inviteId);
     try {
       await navigator.clipboard.writeText(inviteUrl);
-      setActionStatus("Invitation URL copied.");
+      setActionStatus("URL d'invitation copiée.");
     } catch (error) {
-      setActionStatus("Could not copy URL automatically.");
+      setActionStatus("Impossible de copier l'URL automatiquement.");
     }
   };
 
   const handleResetInvitation = async (inviteId) => {
     if (!db) return;
     setActiveInviteId(inviteId);
-    setActionStatus("Resetting RSVP...");
+    setActionStatus("Réinitialisation du RSVP...");
     try {
       await deleteDoc(doc(db, "rsvps", inviteId));
       await loadRsvps();
-      setActionStatus("RSVP reset. This guest can submit again.");
+      setActionStatus("RSVP réinitialisé. Cet invité peut répondre à nouveau.");
     } catch (error) {
-      setActionStatus("Could not reset RSVP.");
+      setActionStatus("Impossible de réinitialiser le RSVP.");
     } finally {
       setActiveInviteId("");
     }
@@ -138,16 +138,16 @@ export default function AdminInvitesPage() {
   const handleDeleteInvitation = async (inviteId) => {
     if (!db) return;
     setActiveInviteId(inviteId);
-    setActionStatus("Deleting invitation...");
+    setActionStatus("Suppression de l'invitation...");
     try {
       await Promise.all([
         deleteDoc(doc(db, "invitations", inviteId)),
         deleteDoc(doc(db, "rsvps", inviteId))
       ]);
       await loadAll();
-      setActionStatus("Invitation deleted.");
+      setActionStatus("Invitation supprimée.");
     } catch (error) {
-      setActionStatus("Could not delete invitation.");
+      setActionStatus("Impossible de supprimer l'invitation.");
     } finally {
       setActiveInviteId("");
     }
@@ -158,16 +158,16 @@ export default function AdminInvitesPage() {
     const guestName = name.trim();
 
     if (!guestName) {
-      setStatus("Please enter a guest name.");
+      setStatus("Veuillez saisir un nom d'invité.");
       return;
     }
     if (!db) {
-      setStatus("Firebase is not configured. Check your env variables.");
+      setStatus("Firebase n'est pas configuré. Vérifiez vos variables d'environnement.");
       return;
     }
 
     setIsSubmitting(true);
-    setStatus("Creating invitation...");
+    setStatus("Création de l'invitation...");
 
     try {
       const ref = await addDoc(collection(db, "invitations"), {
@@ -177,11 +177,11 @@ export default function AdminInvitesPage() {
 
       const inviteUrl = getInviteUrl(ref.id);
       setResultUrl(inviteUrl);
-      setStatus("Invitation created.");
+      setStatus("Invitation créée.");
       setName("");
       await loadAll();
     } catch (error) {
-      setStatus("Could not create invitation. Please try again.");
+      setStatus("Impossible de créer l'invitation. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
@@ -190,15 +190,15 @@ export default function AdminInvitesPage() {
   return (
     <main className="admin-wrap">
       <section className="admin-card">
-        <h1>Invitation Admin</h1>
+        <h1>Administration des invitations</h1>
         <p className="muted">
-          Create one link per invited person. The ID in the link maps to their
-          name and allows one RSVP submission.
+          Créez un lien unique par invité. L'identifiant dans le lien permet de
+          retrouver le nom et d'autoriser un seul RSVP.
         </p>
 
         <form className="form" onSubmit={createInvite}>
           <label>
-            Guest name
+            Nom de l'invité
             <input
               type="text"
               value={name}
@@ -209,7 +209,7 @@ export default function AdminInvitesPage() {
             />
           </label>
           <button className="primary" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create invitation link"}
+            {isSubmitting ? "Création..." : "Créer le lien d'invitation"}
           </button>
         </form>
 
@@ -217,22 +217,22 @@ export default function AdminInvitesPage() {
         {resultUrl ? (
           <div className="admin-result">
             <label>
-              Generated URL
+              URL générée
               <input type="text" readOnly value={resultUrl} />
             </label>
           </div>
         ) : null}
 
         <section className="admin-rsvp">
-          <h2>RSVP Dashboard</h2>
+          <h2>Tableau de bord RSVP</h2>
           <div className="admin-grid">
             <aside className="admin-stats">
               <div className="admin-stat">
-                <div className="admin-stat-label">People coming</div>
+                <div className="admin-stat-label">Personnes présentes</div>
                 <div className="admin-stat-value">{stats.comingPeople}</div>
               </div>
               <div className="admin-stat">
-                <div className="admin-stat-label">Average guests / RSVP</div>
+                <div className="admin-stat-label">Moyenne de personnes / RSVP</div>
                 <div className="admin-stat-value">{stats.averageCount.toFixed(2)}</div>
               </div>
             </aside>
@@ -242,10 +242,10 @@ export default function AdminInvitesPage() {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Answer</th>
-                    <th>Count</th>
-                    <th>Phone</th>
+                    <th>Nom</th>
+                    <th>Réponse</th>
+                    <th>Nombre</th>
+                    <th>Téléphone</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -271,8 +271,8 @@ export default function AdminInvitesPage() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Invite ID</th>
+                  <th>Nom</th>
+                  <th>ID d'invitation</th>
                   <th>RSVP</th>
                   <th>Actions</th>
                 </tr>
@@ -285,7 +285,7 @@ export default function AdminInvitesPage() {
                     <tr key={row.id}>
                       <td>{row.guestName}</td>
                       <td>{row.id}</td>
-                      <td>{hasRsvp ? "Submitted" : "Pending"}</td>
+                      <td>{hasRsvp ? "Envoyé" : "En attente"}</td>
                       <td>
                         <div className="admin-actions">
                           <button
@@ -293,7 +293,7 @@ export default function AdminInvitesPage() {
                             className="admin-mini"
                             onClick={() => handleCopyUrl(row.id)}
                           >
-                            Copy URL
+                            Copier URL
                           </button>
                           <button
                             type="button"
@@ -301,7 +301,7 @@ export default function AdminInvitesPage() {
                             disabled={isBusy}
                             onClick={() => handleResetInvitation(row.id)}
                           >
-                            Reset RSVP
+                            Réinitialiser RSVP
                           </button>
                           <button
                             type="button"
@@ -309,7 +309,7 @@ export default function AdminInvitesPage() {
                             disabled={isBusy}
                             onClick={() => handleDeleteInvitation(row.id)}
                           >
-                            Delete
+                            Supprimer
                           </button>
                         </div>
                       </td>

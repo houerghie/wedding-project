@@ -21,7 +21,7 @@ export default function InviteSection({
     <section
       id="invite"
       className={inviteClass}
-      aria-label="Invitation details"
+      aria-label="Détails de l'invitation"
       ref={inviteRef}
     >
       <div className="page">
