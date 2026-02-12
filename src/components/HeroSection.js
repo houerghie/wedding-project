@@ -45,7 +45,7 @@ export default function HeroSection({ guest, eventDateTime }) {
       <div className="hero-center">
         <p className="hero-line">Cher/Chere {guest},</p>
         <h1>
-          <span>Khawla ben hadj taieb</span>
+          <span>Khawla hadj taieb</span>
           <span className="amp">&amp;</span>
           <span>Ahmed Yassine Trabelsi</span>
         </h1>
