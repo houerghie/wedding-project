@@ -1,4 +1,23 @@
-export default function HeroSection({ guest }) {
+﻿function formatEventDateTime(dateTime) {
+  const dt = new Date(dateTime);
+  if (Number.isNaN(dt.getTime())) {
+    return "Date a definir";
+  }
+
+  const datePart = dt.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+  const timePart = dt.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  return `${datePart} - ${timePart}`;
+}
+
+export default function HeroSection({ guest, eventDateTime }) {
   return (
     <header className="hero">
       <div className="hero-media" aria-hidden="true">
@@ -24,22 +43,22 @@ export default function HeroSection({ guest }) {
       </nav>
 
       <div className="hero-center">
-        <p className="hero-line">Cher/Chère {guest},</p>
+        <p className="hero-line">Cher/Chere {guest},</p>
         <h1>
           <span>Khawla ben hadj taieb</span>
           <span className="amp">&amp;</span>
           <span>Ahmed Yassine Trabelsi</span>
         </h1>
-        <p className="hero-sub">Nous vous invitons à célébrer notre mariage.</p>
+        <p className="hero-sub">Nous vous invitons a celebrer notre mariage.</p>
         <button className="primary hero-cta" type="button">
-          Confirmer votre présence
+          Confirmer votre presence
         </button>
       </div>
 
       <div className="hero-deco">
         <div className="leaf left"></div>
         <div className="leaf right"></div>
-        <div className="seal-mark">20 avril 2026</div>
+        <div className="seal-mark">{formatEventDateTime(eventDateTime)}</div>
       </div>
     </header>
   );

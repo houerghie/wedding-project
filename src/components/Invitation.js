@@ -14,6 +14,39 @@ import InviteSection from "./InviteSection";
 import { db } from "../lib/firebase";
 
 const OPEN_DELAY_MS = 950;
+const DEFAULT_EVENT_DATE_TIME = "2026-04-20T19:00";
+const ZERO_COUNTDOWN = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+const DEFAULT_VENUE = {
+  name: "Lieu a definir",
+  time: "19:00",
+  mapUrl: "https://maps.google.com/?q=Bizerte%2C%20Tunisia"
+};
+const DEFAULT_DRESS_CODE = {
+  title: "Dress code",
+  text: "Tenue elegante demandee. Tons neutres et pastel recommandes.",
+  palette: "Beige, creme, vert sauge, bordeaux"
+};
+const DEFAULT_PRESENTS = {
+  title: "Presents",
+  text: "Votre presence est notre plus beau cadeau.",
+  linkLabel: "Voir la liste de cadeaux",
+  linkUrl: ""
+};
+
+function getCountdownParts(targetDateTime) {
+  const target = new Date(targetDateTime).getTime();
+  if (Number.isNaN(target)) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  const diff = Math.max(0, target - Date.now());
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  return { days, hours, minutes, seconds };
+}
 
 export default function Invitation() {
   const searchParams = useSearchParams();
@@ -27,6 +60,11 @@ export default function Invitation() {
   const [rsvpMsg, setRsvpMsg] = useState("");
   const [guest, setGuest] = useState("Invite");
   const [inviteStatus, setInviteStatus] = useState("idle");
+  const [eventDateTime, setEventDateTime] = useState(DEFAULT_EVENT_DATE_TIME);
+  const [countdown, setCountdown] = useState(ZERO_COUNTDOWN);
+  const [venue, setVenue] = useState(DEFAULT_VENUE);
+  const [dressCode, setDressCode] = useState(DEFAULT_DRESS_CODE);
+  const [presents, setPresents] = useState(DEFAULT_PRESENTS);
 
   const inviteRef = useRef(null);
   const formRef = useRef(null);
@@ -98,7 +136,87 @@ export default function Invitation() {
     return () => {
       isMounted = false;
     };
-  }, [inviteId, db]);
+  }, [inviteId]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSiteSettings = async () => {
+      if (!db) return;
+      try {
+        const snapshot = await getDoc(doc(db, "siteContent", "homepage"));
+        if (!isMounted || !snapshot.exists()) return;
+
+        const data = snapshot.data();
+        if (typeof data.eventDateTime === "string" && data.eventDateTime.trim()) {
+          setEventDateTime(data.eventDateTime.trim());
+        }
+        setVenue({
+          name:
+            typeof data.venueName === "string" && data.venueName.trim()
+              ? data.venueName.trim()
+              : DEFAULT_VENUE.name,
+          time:
+            typeof data.venueTime === "string" && data.venueTime.trim()
+              ? data.venueTime.trim()
+              : DEFAULT_VENUE.time,
+          mapUrl:
+            typeof data.venueMapUrl === "string" && data.venueMapUrl.trim()
+              ? data.venueMapUrl.trim()
+              : DEFAULT_VENUE.mapUrl
+        });
+        setDressCode({
+          title:
+            typeof data.dressCodeTitle === "string" && data.dressCodeTitle.trim()
+              ? data.dressCodeTitle.trim()
+              : DEFAULT_DRESS_CODE.title,
+          text:
+            typeof data.dressCodeText === "string" && data.dressCodeText.trim()
+              ? data.dressCodeText.trim()
+              : DEFAULT_DRESS_CODE.text,
+          palette:
+            typeof data.dressCodePalette === "string" && data.dressCodePalette.trim()
+              ? data.dressCodePalette.trim()
+              : DEFAULT_DRESS_CODE.palette
+        });
+        setPresents({
+          title:
+            typeof data.presentsTitle === "string" && data.presentsTitle.trim()
+              ? data.presentsTitle.trim()
+              : DEFAULT_PRESENTS.title,
+          text:
+            typeof data.presentsText === "string" && data.presentsText.trim()
+              ? data.presentsText.trim()
+              : DEFAULT_PRESENTS.text,
+          linkLabel:
+            typeof data.presentsLinkLabel === "string" && data.presentsLinkLabel.trim()
+              ? data.presentsLinkLabel.trim()
+              : DEFAULT_PRESENTS.linkLabel,
+          linkUrl:
+            typeof data.presentsLinkUrl === "string" && data.presentsLinkUrl.trim()
+              ? data.presentsLinkUrl.trim()
+              : DEFAULT_PRESENTS.linkUrl
+        });
+      } catch (error) {
+        // Keep default datetime if settings cannot be loaded.
+      }
+    };
+
+    loadSiteSettings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setCountdown(getCountdownParts(eventDateTime));
+    const timer = window.setInterval(() => {
+      setCountdown(getCountdownParts(eventDateTime));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [eventDateTime]);
 
   useEffect(() => {
     if (!inviteOpen) {
@@ -193,6 +311,11 @@ export default function Invitation() {
       )}
       <InviteSection
         guest={guest}
+        eventDateTime={eventDateTime}
+        countdown={countdown}
+        venue={venue}
+        dressCode={dressCode}
+        presents={presents}
         inviteOpen={inviteOpen}
         inviteRef={inviteRef}
         formRef={formRef}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -6,10 +6,14 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
+  setDoc,
   serverTimestamp
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
+
+const DEFAULT_EVENT_DATE_TIME = "2026-04-20T19:00";
 
 export default function AdminInvitesPage() {
   const [name, setName] = useState("");
@@ -18,7 +22,24 @@ export default function AdminInvitesPage() {
   const [tableStatus, setTableStatus] = useState("Chargement des RSVP...");
   const [invitationStatus, setInvitationStatus] = useState("Chargement des invitations...");
   const [actionStatus, setActionStatus] = useState("");
+  const [eventStatus, setEventStatus] = useState("");
+  const [eventDateTime, setEventDateTime] = useState(DEFAULT_EVENT_DATE_TIME);
+  const [venueName, setVenueName] = useState("Lieu a definir");
+  const [venueTime, setVenueTime] = useState("19:00");
+  const [venueMapUrl, setVenueMapUrl] = useState("https://maps.google.com/?q=Bizerte%2C%20Tunisia");
+  const [dressCodeTitle, setDressCodeTitle] = useState("Dress code");
+  const [dressCodeText, setDressCodeText] = useState(
+    "Tenue elegante demandee. Tons neutres et pastel recommandes."
+  );
+  const [dressCodePalette, setDressCodePalette] = useState(
+    "Beige, creme, vert sauge, bordeaux"
+  );
+  const [presentsTitle, setPresentsTitle] = useState("Presents");
+  const [presentsText, setPresentsText] = useState("Votre presence est notre plus beau cadeau.");
+  const [presentsLinkLabel, setPresentsLinkLabel] = useState("Voir la liste de cadeaux");
+  const [presentsLinkUrl, setPresentsLinkUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingEvent, setIsSavingEvent] = useState(false);
   const [rsvps, setRsvps] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [activeInviteId, setActiveInviteId] = useState("");
@@ -27,7 +48,7 @@ export default function AdminInvitesPage() {
 
   const loadRsvps = async () => {
     if (!db) {
-      setTableStatus("Firebase n'est pas configuré.");
+      setTableStatus("Firebase n'est pas configure.");
       return;
     }
 
@@ -53,7 +74,7 @@ export default function AdminInvitesPage() {
 
   const loadInvitations = async () => {
     if (!db) {
-      setInvitationStatus("Firebase n'est pas configuré.");
+      setInvitationStatus("Firebase n'est pas configure.");
       return;
     }
 
@@ -67,7 +88,7 @@ export default function AdminInvitesPage() {
           guestName:
             typeof data.guestName === "string" && data.guestName.trim()
               ? data.guestName.trim()
-              : "Invité"
+              : "Invite"
         };
       });
       rows.sort((a, b) => a.guestName.localeCompare(b.guestName));
@@ -78,8 +99,59 @@ export default function AdminInvitesPage() {
     }
   };
 
+  const loadEventSettings = async () => {
+    if (!db) {
+      setEventStatus("Firebase n'est pas configure.");
+      return;
+    }
+
+    setEventStatus("Chargement de la date de l'evenement...");
+    try {
+      const snapshot = await getDoc(doc(db, "siteContent", "homepage"));
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        if (typeof data.eventDateTime === "string" && data.eventDateTime.trim()) {
+          setEventDateTime(data.eventDateTime.trim());
+        }
+        if (typeof data.venueName === "string" && data.venueName.trim()) {
+          setVenueName(data.venueName.trim());
+        }
+        if (typeof data.venueTime === "string" && data.venueTime.trim()) {
+          setVenueTime(data.venueTime.trim());
+        }
+        if (typeof data.venueMapUrl === "string" && data.venueMapUrl.trim()) {
+          setVenueMapUrl(data.venueMapUrl.trim());
+        }
+        if (typeof data.dressCodeTitle === "string" && data.dressCodeTitle.trim()) {
+          setDressCodeTitle(data.dressCodeTitle.trim());
+        }
+        if (typeof data.dressCodeText === "string" && data.dressCodeText.trim()) {
+          setDressCodeText(data.dressCodeText.trim());
+        }
+        if (typeof data.dressCodePalette === "string" && data.dressCodePalette.trim()) {
+          setDressCodePalette(data.dressCodePalette.trim());
+        }
+        if (typeof data.presentsTitle === "string" && data.presentsTitle.trim()) {
+          setPresentsTitle(data.presentsTitle.trim());
+        }
+        if (typeof data.presentsText === "string" && data.presentsText.trim()) {
+          setPresentsText(data.presentsText.trim());
+        }
+        if (typeof data.presentsLinkLabel === "string" && data.presentsLinkLabel.trim()) {
+          setPresentsLinkLabel(data.presentsLinkLabel.trim());
+        }
+        if (typeof data.presentsLinkUrl === "string") {
+          setPresentsLinkUrl(data.presentsLinkUrl.trim());
+        }
+      }
+      setEventStatus("");
+    } catch (error) {
+      setEventStatus("Impossible de charger la date de l'evenement.");
+    }
+  };
+
   const loadAll = async () => {
-    await Promise.all([loadRsvps(), loadInvitations()]);
+    await Promise.all([loadRsvps(), loadInvitations(), loadEventSettings()]);
   };
 
   useEffect(() => {
@@ -114,7 +186,7 @@ export default function AdminInvitesPage() {
     const inviteUrl = getInviteUrl(inviteId);
     try {
       await navigator.clipboard.writeText(inviteUrl);
-      setActionStatus("URL d'invitation copiée.");
+      setActionStatus("URL d'invitation copiee.");
     } catch (error) {
       setActionStatus("Impossible de copier l'URL automatiquement.");
     }
@@ -123,13 +195,13 @@ export default function AdminInvitesPage() {
   const handleResetInvitation = async (inviteId) => {
     if (!db) return;
     setActiveInviteId(inviteId);
-    setActionStatus("Réinitialisation du RSVP...");
+    setActionStatus("Reinitialisation du RSVP...");
     try {
       await deleteDoc(doc(db, "rsvps", inviteId));
       await loadRsvps();
-      setActionStatus("RSVP réinitialisé. Cet invité peut répondre à nouveau.");
+      setActionStatus("RSVP reinitialise. Cet invite peut repondre a nouveau.");
     } catch (error) {
-      setActionStatus("Impossible de réinitialiser le RSVP.");
+      setActionStatus("Impossible de reinitialiser le RSVP.");
     } finally {
       setActiveInviteId("");
     }
@@ -145,7 +217,7 @@ export default function AdminInvitesPage() {
         deleteDoc(doc(db, "rsvps", inviteId))
       ]);
       await loadAll();
-      setActionStatus("Invitation supprimée.");
+      setActionStatus("Invitation supprimee.");
     } catch (error) {
       setActionStatus("Impossible de supprimer l'invitation.");
     } finally {
@@ -158,16 +230,16 @@ export default function AdminInvitesPage() {
     const guestName = name.trim();
 
     if (!guestName) {
-      setStatus("Veuillez saisir un nom d'invité.");
+      setStatus("Veuillez saisir un nom d'invite.");
       return;
     }
     if (!db) {
-      setStatus("Firebase n'est pas configuré. Vérifiez vos variables d'environnement.");
+      setStatus("Firebase n'est pas configure. Verifiez vos variables d'environnement.");
       return;
     }
 
     setIsSubmitting(true);
-    setStatus("Création de l'invitation...");
+    setStatus("Creation de l'invitation...");
 
     try {
       const ref = await addDoc(collection(db, "invitations"), {
@@ -177,13 +249,62 @@ export default function AdminInvitesPage() {
 
       const inviteUrl = getInviteUrl(ref.id);
       setResultUrl(inviteUrl);
-      setStatus("Invitation créée.");
+      setStatus("Invitation creee.");
       setName("");
       await loadAll();
     } catch (error) {
-      setStatus("Impossible de créer l'invitation. Veuillez réessayer.");
+      setStatus("Impossible de creer l'invitation. Veuillez reessayer.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const saveEventDateTime = async (event) => {
+    event.preventDefault();
+    if (!db) {
+      setEventStatus("Firebase n'est pas configure.");
+      return;
+    }
+    if (!eventDateTime) {
+      setEventStatus("Veuillez choisir une date et une heure.");
+      return;
+    }
+    if (!venueName.trim()) {
+      setEventStatus("Veuillez saisir le nom du lieu.");
+      return;
+    }
+    if (!venueMapUrl.trim()) {
+      setEventStatus("Veuillez saisir le lien Google Maps.");
+      return;
+    }
+
+    setIsSavingEvent(true);
+    setEventStatus("Enregistrement de la date...");
+
+    try {
+      await setDoc(
+        doc(db, "siteContent", "homepage"),
+        {
+          eventDateTime,
+          venueName: venueName.trim(),
+          venueTime: venueTime.trim() || "19:00",
+          venueMapUrl: venueMapUrl.trim(),
+          dressCodeTitle: dressCodeTitle.trim() || "Dress code",
+          dressCodeText: dressCodeText.trim() || "Tenue elegante demandee.",
+          dressCodePalette: dressCodePalette.trim() || "Beige, creme, vert sauge",
+          presentsTitle: presentsTitle.trim() || "Presents",
+          presentsText: presentsText.trim() || "Votre presence est notre plus beau cadeau.",
+          presentsLinkLabel: presentsLinkLabel.trim() || "Voir la liste de cadeaux",
+          presentsLinkUrl: presentsLinkUrl.trim(),
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+      setEventStatus("Date enregistree.");
+    } catch (error) {
+      setEventStatus("Impossible d'enregistrer la date.");
+    } finally {
+      setIsSavingEvent(false);
     }
   };
 
@@ -192,13 +313,118 @@ export default function AdminInvitesPage() {
       <section className="admin-card">
         <h1>Administration des invitations</h1>
         <p className="muted">
-          Créez un lien unique par invité. L'identifiant dans le lien permet de
+          Creez un lien unique par invite. L'identifiant dans le lien permet de
           retrouver le nom et d'autoriser un seul RSVP.
         </p>
 
+        <section className="admin-rsvp">
+          <h2>Date, lieu et sections configurables</h2>
+          <form className="form" onSubmit={saveEventDateTime}>
+            <label>
+              Date et heure
+              <input
+                type="datetime-local"
+                value={eventDateTime}
+                onChange={(event) => setEventDateTime(event.target.value)}
+                required
+              />
+            </label>
+            <label>
+              Nom du lieu
+              <input
+                type="text"
+                value={venueName}
+                onChange={(event) => setVenueName(event.target.value)}
+                placeholder="Ex: Dar El Jeld"
+                required
+              />
+            </label>
+            <label>
+              Heure du lieu (affichage)
+              <input
+                type="text"
+                value={venueTime}
+                onChange={(event) => setVenueTime(event.target.value)}
+                placeholder="Ex: 19:00"
+              />
+            </label>
+            <label>
+              Lien Google Maps
+              <input
+                type="url"
+                value={venueMapUrl}
+                onChange={(event) => setVenueMapUrl(event.target.value)}
+                placeholder="https://maps.google.com/?q=..."
+                required
+              />
+            </label>
+            <label>
+              Titre Dress code
+              <input
+                type="text"
+                value={dressCodeTitle}
+                onChange={(event) => setDressCodeTitle(event.target.value)}
+              />
+            </label>
+            <label>
+              Texte Dress code
+              <input
+                type="text"
+                value={dressCodeText}
+                onChange={(event) => setDressCodeText(event.target.value)}
+              />
+            </label>
+            <label>
+              Palette couleurs
+              <input
+                type="text"
+                value={dressCodePalette}
+                onChange={(event) => setDressCodePalette(event.target.value)}
+              />
+            </label>
+            <label>
+              Titre Presents
+              <input
+                type="text"
+                value={presentsTitle}
+                onChange={(event) => setPresentsTitle(event.target.value)}
+              />
+            </label>
+            <label>
+              Texte Presents
+              <input
+                type="text"
+                value={presentsText}
+                onChange={(event) => setPresentsText(event.target.value)}
+              />
+            </label>
+            <label>
+              Libelle lien cadeaux
+              <input
+                type="text"
+                value={presentsLinkLabel}
+                onChange={(event) => setPresentsLinkLabel(event.target.value)}
+              />
+            </label>
+            <label>
+              URL cadeaux (optionnel)
+              <input
+                type="url"
+                value={presentsLinkUrl}
+                onChange={(event) => setPresentsLinkUrl(event.target.value)}
+                placeholder="https://..."
+              />
+            </label>
+            <button className="primary" type="submit" disabled={isSavingEvent}>
+              {isSavingEvent ? "Enregistrement..." : "Enregistrer la configuration"}
+            </button>
+          </form>
+          {eventStatus ? <p className="muted">{eventStatus}</p> : null}
+        </section>
+
         <form className="form" onSubmit={createInvite}>
           <label>
-            Nom de l'invité
+            Nom de l'invite
             <input
               type="text"
               value={name}
@@ -209,7 +435,7 @@ export default function AdminInvitesPage() {
             />
           </label>
           <button className="primary" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Création..." : "Créer le lien d'invitation"}
+            {isSubmitting ? "Creation..." : "Creer le lien d'invitation"}
           </button>
         </form>
 
@@ -217,7 +443,7 @@ export default function AdminInvitesPage() {
         {resultUrl ? (
           <div className="admin-result">
             <label>
-              URL générée
+              URL generee
               <input type="text" readOnly value={resultUrl} />
             </label>
           </div>
@@ -228,7 +454,7 @@ export default function AdminInvitesPage() {
           <div className="admin-grid">
             <aside className="admin-stats">
               <div className="admin-stat">
-                <div className="admin-stat-label">Personnes présentes</div>
+                <div className="admin-stat-label">Personnes presentes</div>
                 <div className="admin-stat-value">{stats.comingPeople}</div>
               </div>
               <div className="admin-stat">
@@ -243,9 +469,9 @@ export default function AdminInvitesPage() {
                 <thead>
                   <tr>
                     <th>Nom</th>
-                    <th>Réponse</th>
+                    <th>Reponse</th>
                     <th>Nombre</th>
-                    <th>Téléphone</th>
+                    <th>Telephone</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -285,7 +511,7 @@ export default function AdminInvitesPage() {
                     <tr key={row.id}>
                       <td>{row.guestName}</td>
                       <td>{row.id}</td>
-                      <td>{hasRsvp ? "Envoyé" : "En attente"}</td>
+                      <td>{hasRsvp ? "Envoye" : "En attente"}</td>
                       <td>
                         <div className="admin-actions">
                           <button
@@ -301,7 +527,7 @@ export default function AdminInvitesPage() {
                             disabled={isBusy}
                             onClick={() => handleResetInvitation(row.id)}
                           >
-                            Réinitialiser RSVP
+                            Reinitialiser RSVP
                           </button>
                           <button
                             type="button"

@@ -1,12 +1,20 @@
 import HeroSection from "./HeroSection";
+import EventDetailsSection from "./EventDetailsSection";
 import StorySection from "./StorySection";
 import ScheduleSection from "./ScheduleSection";
 import GallerySection from "./GallerySection";
+import DressCodeSection from "./DressCodeSection";
+import PresentsSection from "./PresentsSection";
 import RsvpSection from "./RsvpSection";
 import FooterSection from "./FooterSection";
 
 export default function InviteSection({
   guest,
+  eventDateTime,
+  countdown,
+  venue,
+  dressCode,
+  presents,
   inviteOpen,
   inviteRef,
   formRef,
@@ -25,10 +33,13 @@ export default function InviteSection({
       ref={inviteRef}
     >
       <div className="page">
-        <HeroSection guest={guest} />
+        <HeroSection guest={guest} eventDateTime={eventDateTime} />
+        <EventDetailsSection countdown={countdown} venue={venue} />
         <StorySection />
         <ScheduleSection />
         <GallerySection />
+        <DressCodeSection dressCode={dressCode} />
+        <PresentsSection presents={presents} />
         <RsvpSection formRef={formRef} rsvpMsg={rsvpMsg} onSubmit={onSubmit} />
         <FooterSection />
       </div>
