@@ -1,7 +1,7 @@
 import AdminInvitesPage from "../../components/AdminInvitesPage";
 
 export const metadata = {
-  title: "Administration des invitations"
+  title: "Invitation Administration"
 };
 
 export default function AdminPage() {

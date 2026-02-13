@@ -1,15 +1,15 @@
 function formatEventDateTime(dateTime) {
   const dt = new Date(dateTime);
   if (Number.isNaN(dt.getTime())) {
-    return "Date a definir";
+    return "Date to be confirmed";
   }
 
-  const datePart = dt.toLocaleDateString("fr-FR", {
+  const datePart = dt.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric"
   });
-  const timePart = dt.toLocaleTimeString("fr-FR", {
+  const timePart = dt.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit"
   });
@@ -63,17 +63,17 @@ export default function HeroSection({ guest, eventDateTime }) {
       <div className="hero-overlay" aria-hidden="true"></div>
 
       <div className="hero-head">
-        <div className="brand">La Rose &amp; Pour Toujours</div>
+        <div className="brand">The Rose &amp; Forever</div>
         <nav className="nav">
-          <a href="#story">Histoire</a>
-          <a href="#schedule">Programme</a>
+          <a href="#story">Story</a>
+          <a href="#schedule">Schedule</a>
           <a href="#gallery">Moments</a>
           <a href="#rsvp">RSVP</a>
         </nav>
       </div>
 
       <div className="hero-center">
-        <p className="hero-line">Cher/Chere {guest},</p>
+        <p className="hero-line">Dear {guest},</p>
         <h1>
           <span>Khawla hadj taieb</span>
           <span className="amp">&amp;</span>
@@ -83,7 +83,7 @@ export default function HeroSection({ guest, eventDateTime }) {
           We&apos;re finally making it official! And your presence is mandatory!
         </p>
         <button className="primary hero-cta" type="button">
-          Confirmer votre presence
+          Confirm your attendance
         </button>
       </div>
 
@@ -91,10 +91,9 @@ export default function HeroSection({ guest, eventDateTime }) {
         <div className="seal-mark">{formatEventDateTime(eventDateTime)}</div>
       </div>
 
-      <a className="hero-scroll" href="#event-details" aria-label="Defiler vers la section suivante">
+      <a className="hero-scroll" href="#event-details" aria-label="Scroll to next section">
         <span aria-hidden="true">&darr;</span>
       </a>
     </header>
   );
 }
-

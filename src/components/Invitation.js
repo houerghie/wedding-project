@@ -17,19 +17,19 @@ const OPEN_DELAY_MS = 950;
 const DEFAULT_EVENT_DATE_TIME = "2026-04-20T19:00";
 const ZERO_COUNTDOWN = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 const DEFAULT_VENUE = {
-  name: "Lieu a definir",
+  name: "Hotel l'Acropole",
   time: "19:00",
-  mapUrl: "https://maps.google.com/?q=Bizerte%2C%20Tunisia"
+  mapUrl: "https://maps.google.com/?q=Hotel%20l%27Acropole%20Bizerte"
 };
 const DEFAULT_DRESS_CODE = {
-  title: "Dress code",
-  text: "Tenue elegante demandee. Tons neutres et pastel recommandes.",
-  palette: "Beige, creme, vert sauge, bordeaux"
+  title: "Dress Code",
+  text: "Elegant attire requested. Neutral and pastel tones recommended.",
+  palette: "Beige, cream, sage green, burgundy"
 };
 const DEFAULT_PRESENTS = {
   title: "Presents",
   text: "Grace us with your beautiful presence and become the witness of our epic union",
-  linkLabel: "Voir la liste de cadeaux",
+  linkLabel: "View gift list",
   linkUrl: ""
 };
 
@@ -255,16 +255,16 @@ export default function Invitation() {
 
   const handleRsvp = async (event) => {
     event.preventDefault();
-    setRsvpMsg("Envoi en cours...");
+    setRsvpMsg("Sending...");
 
     const form = formRef.current;
     if (!form) return;
     if (!db) {
-      setRsvpMsg("Le RSVP n'est pas encore configure. Ajoutez les variables Firebase.");
+      setRsvpMsg("RSVP is not configured yet. Add Firebase environment variables.");
       return;
     }
     if (!inviteId || inviteStatus !== "valid") {
-      setRsvpMsg("Ce lien d'invitation est invalide.");
+      setRsvpMsg("This invitation link is invalid.");
       return;
     }
 
@@ -287,14 +287,14 @@ export default function Invitation() {
         }
         transaction.set(rsvpRef, payload);
       });
-      setRsvpMsg("RSVP envoye avec succes.");
+      setRsvpMsg("RSVP sent successfully.");
       form.reset();
     } catch (error) {
       if (error instanceof Error && error.message === "already-submitted") {
-        setRsvpMsg("Le RSVP a deja ete envoye pour cette invitation.");
+        setRsvpMsg("RSVP has already been submitted for this invitation.");
         return;
       }
-      setRsvpMsg("Impossible d'envoyer le RSVP. Veuillez reessayer.");
+      setRsvpMsg("Unable to send RSVP. Please try again.");
     }
   };
 

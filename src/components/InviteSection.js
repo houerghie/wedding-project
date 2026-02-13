@@ -29,7 +29,7 @@ export default function InviteSection({
     <section
       id="invite"
       className={inviteClass}
-      aria-label="Détails de l'invitation"
+      aria-label="Invitation details"
       ref={inviteRef}
     >
       <HeroSection guest={guest} eventDateTime={eventDateTime} />

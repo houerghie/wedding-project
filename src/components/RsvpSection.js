@@ -1,35 +1,35 @@
 export default function RsvpSection({ formRef, rsvpMsg, onSubmit }) {
   return (
     <section id="rsvp" className="block rsvp-section">
-      <h2>Confirmer votre presence</h2>
+      <h2>Confirm Your Attendance</h2>
       <p className="rsvp-intro">
-        Repondez en quelques secondes pour nous aider a organiser cette journee.
+        Reply in a few seconds to help us organize this special day.
       </p>
 
       <div className="rsvp-shell">
         <form id="rsvpForm" className="form wide rsvp-form" ref={formRef} onSubmit={onSubmit}>
           <label>
-            <span>Votre reponse</span>
+            <span>Your response</span>
             <select name="answer" required>
-              <option value="">Choisir...</option>
-              <option value="yes">Oui, je serai present(e)</option>
-              <option value="no">Non, je ne pourrai pas</option>
+              <option value="">Choose...</option>
+              <option value="yes">Yes, I will attend</option>
+              <option value="no">No, I will not be able to attend</option>
             </select>
           </label>
 
           <label>
-            <span>Nombre de personnes</span>
+            <span>Number of guests</span>
             <input name="count" type="number" min="1" max="10" defaultValue="1" required />
           </label>
 
           <label>
-            <span>Telephone (optionnel)</span>
+            <span>Phone (optional)</span>
             <input name="phone" type="tel" placeholder="+216 ..." />
           </label>
 
           <div className="rsvp-actions">
             <button type="submit" className="primary rsvp-submit">
-              Envoyer RSVP
+              Send RSVP
             </button>
             <p className="muted rsvp-msg" id="rsvpMsg">
               {rsvpMsg}
@@ -38,14 +38,14 @@ export default function RsvpSection({ formRef, rsvpMsg, onSubmit }) {
         </form>
 
         <p className="muted location rsvp-location">
-          <span>Lieu:</span>{" "}
+          <span>Venue:</span>{" "}
           <a
             className="link"
             target="_blank"
             rel="noreferrer"
-            href="https://maps.google.com/?q=Bizerte%2C%20Tunisia"
+            href="https://maps.google.com/?q=Hotel%20l%27Acropole%20Bizerte"
           >
-            Ouvrir dans Google Maps
+            Open in Google Maps
           </a>
         </p>
       </div>

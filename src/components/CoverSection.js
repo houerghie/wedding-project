@@ -25,13 +25,13 @@ export default function CoverSection({
   };
 
   return (
-    <section id="cover" className={coverClass} aria-label="Couverture d'invitation">
+    <section id="cover" className={coverClass} aria-label="Invitation cover">
       <div
         className={envelopeClass}
         id="envelope"
         role="button"
         tabIndex={0}
-        aria-label="Ouvrir l'invitation"
+        aria-label="Open invitation"
         onClick={onOpen}
         onKeyDown={handleKeyDown}
       >
@@ -42,7 +42,7 @@ export default function CoverSection({
         <div className="env-letter" id="letter">
           <div className="letter-top">
             <div className="mono">M - U</div>
-            <div className="sub">Cette invitation vous est exclusivement réservée</div>
+            <div className="sub">This invitation is exclusively reserved for you</div>
             <div className="guest" id="guestName">
               {guest}
             </div>
@@ -52,7 +52,7 @@ export default function CoverSection({
         <div className="seal" aria-hidden="true"></div>
       </div>
 
-      <p className="hint">Touchez l'enveloppe pour ouvrir</p>
+      <p className="hint">Tap the envelope to open</p>
     </section>
   );
 }

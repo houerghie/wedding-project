@@ -1,7 +1,7 @@
 export default function FooterSection() {
   return (
     <footer className="footer">
-      <p className="muted">Créé avec amour - invitation personnalisée</p>
+      <p className="muted">Made with love - personalized invitation</p>
     </footer>
   );
 }

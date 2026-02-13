@@ -24,9 +24,11 @@ export default function AdminInvitesPage() {
   const [actionStatus, setActionStatus] = useState("");
   const [eventStatus, setEventStatus] = useState("");
   const [eventDateTime, setEventDateTime] = useState(DEFAULT_EVENT_DATE_TIME);
-  const [venueName, setVenueName] = useState("Lieu a definir");
+  const [venueName, setVenueName] = useState("Hotel l'Acropole");
   const [venueTime, setVenueTime] = useState("19:00");
-  const [venueMapUrl, setVenueMapUrl] = useState("https://maps.google.com/?q=Bizerte%2C%20Tunisia");
+  const [venueMapUrl, setVenueMapUrl] = useState(
+    "https://maps.google.com/?q=Hotel%20l%27Acropole%20Bizerte"
+  );
   const [dressCodeTitle, setDressCodeTitle] = useState("Dress code");
   const [dressCodeText, setDressCodeText] = useState(
     "Tenue elegante demandee. Tons neutres et pastel recommandes."
