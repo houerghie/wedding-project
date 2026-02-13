@@ -20,6 +20,7 @@ function getEmbedMapUrl(mapUrl) {
 }
 
 export default function EventDetailsSection({ countdown, venue }) {
+  const destinationName = venue?.name || "[Destination Name]";
   const countdownItems = [
     { label: "Jours", value: countdown?.days ?? 0 },
     { label: "Heures", value: countdown?.hours ?? 0 },
@@ -30,7 +31,7 @@ export default function EventDetailsSection({ countdown, venue }) {
   const embedUrl = getEmbedMapUrl(mapLink);
 
   return (
-    <section className="event-section">
+    <section id="event-details" className="event-section">
       <div className="event-countdown" aria-label="Compte a rebours avant l'evenement">
         {countdownItems.map((item) => (
           <div className="countdown-item" key={item.label}>
@@ -42,6 +43,11 @@ export default function EventDetailsSection({ countdown, venue }) {
 
       <div className="event-venue">
         <h3>Ou celebrons-nous</h3>
+        <p>
+          You&apos;re invited to witness our love bloom in the stunning backdrop of{" "}
+          {destinationName}. Please join us for a destination wedding filled with
+          joy, laughter, and cherished memories.
+        </p>
         <p className="event-venue-name">{venue?.name || "Lieu a definir"}</p>
         <p className="event-venue-time">Heure: {venue?.time || "19:00"}</p>
 

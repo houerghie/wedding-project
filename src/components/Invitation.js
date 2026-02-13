@@ -28,7 +28,7 @@ const DEFAULT_DRESS_CODE = {
 };
 const DEFAULT_PRESENTS = {
   title: "Presents",
-  text: "Votre presence est notre plus beau cadeau.",
+  text: "Grace us with your beautiful presence and become the witness of our epic union",
   linkLabel: "Voir la liste de cadeaux",
   linkUrl: ""
 };

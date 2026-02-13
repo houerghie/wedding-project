@@ -4,7 +4,10 @@ export default function PresentsSection({ presents }) {
   return (
     <section className="block info-block" id="presents">
       <h2>{presents?.title || "Presents"}</h2>
-      <p>{presents?.text || "Votre presence est notre plus beau cadeau."}</p>
+      <p>
+        {presents?.text ||
+          "Grace us with your beautiful presence and become the witness of our epic union"}
+      </p>
       {hasLink ? (
         <p>
           <a

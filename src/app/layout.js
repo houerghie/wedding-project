@@ -1,13 +1,13 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Invitation de mariage",
-  description: "Site d'invitation de mariage"
+  title: "Wedding Invitation",
+  description: "Wedding invitation website"
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

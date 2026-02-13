@@ -35,7 +35,9 @@ export default function AdminInvitesPage() {
     "Beige, creme, vert sauge, bordeaux"
   );
   const [presentsTitle, setPresentsTitle] = useState("Presents");
-  const [presentsText, setPresentsText] = useState("Votre presence est notre plus beau cadeau.");
+  const [presentsText, setPresentsText] = useState(
+    "Grace us with your beautiful presence and become the witness of our epic union"
+  );
   const [presentsLinkLabel, setPresentsLinkLabel] = useState("Voir la liste de cadeaux");
   const [presentsLinkUrl, setPresentsLinkUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -293,7 +295,9 @@ export default function AdminInvitesPage() {
           dressCodeText: dressCodeText.trim() || "Tenue elegante demandee.",
           dressCodePalette: dressCodePalette.trim() || "Beige, creme, vert sauge",
           presentsTitle: presentsTitle.trim() || "Presents",
-          presentsText: presentsText.trim() || "Votre presence est notre plus beau cadeau.",
+          presentsText:
+            presentsText.trim() ||
+            "Grace us with your beautiful presence and become the witness of our epic union",
           presentsLinkLabel: presentsLinkLabel.trim() || "Voir la liste de cadeaux",
           presentsLinkUrl: presentsLinkUrl.trim(),
           updatedAt: serverTimestamp()

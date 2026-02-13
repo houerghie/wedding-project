@@ -35,7 +35,7 @@ export default function InviteSection({
       <HeroSection guest={guest} eventDateTime={eventDateTime} />
       <div className="page">
         <EventDetailsSection countdown={countdown} venue={venue} />
-        <StorySection />
+        <StorySection venue={venue} />
         <ScheduleSection />
         <GallerySection />
         <DressCodeSection dressCode={dressCode} />
