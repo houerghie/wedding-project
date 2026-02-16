@@ -52,28 +52,21 @@ export default function HeroSection({ guest, eventDateTime }) {
       <div className="hero-overlay" aria-hidden="true"></div>
 
       <div className="hero-head">
-        <div className="brand">The Rose &amp; Forever</div>
-        <nav className="nav">
-          <a href="#story">Story</a>
-          <a href="#schedule">Schedule</a>
-          <a href="#gallery">Moments</a>
-          <a href="#rsvp">RSVP</a>
-        </nav>
+        <div className="brand">Now &amp; Forever</div>
       </div>
 
       <div className="hero-center">
+        {/* <div className="brand">Now &amp; Forever</div> */}
         <p className="hero-line">Dear {guest},</p>
+        <p className="hero-line">You are invited to the wedding of</p>
         <h1>
-          <span>Khawla hadj taieb</span>
+          <span>Khawla Hadj Taieb</span>
           <span className="amp">&amp;</span>
           <span>Ahmed Yassine Trabelsi</span>
         </h1>
         <p className="hero-sub">
-          We&apos;re finally making it official! And your presence is mandatory!
+          And your presence is mandatory!
         </p>
-        <button className="primary hero-cta" type="button">
-          Confirm your attendance
-        </button>
       </div>
 
       <div className="hero-deco">

@@ -32,7 +32,7 @@ export default function InviteSection({
       <div className="page">
         <EventDetailsSection countdown={countdown} venue={venue} />
         <StorySection venue={venue} />
-        <ScheduleSection />
+        {/* <ScheduleSection /> */}
         <GallerySection />
         <RsvpSection formRef={formRef} rsvpMsg={rsvpMsg} onSubmit={onSubmit} />
         <FooterSection />

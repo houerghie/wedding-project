@@ -29,7 +29,7 @@ export default function RsvpSection({ formRef, rsvpMsg, onSubmit }) {
 
           <div className="rsvp-actions">
             <button type="submit" className="primary rsvp-submit">
-              Send RSVP
+              Confirm Your Attendance
             </button>
             <p className="muted rsvp-msg" id="rsvpMsg">
               {rsvpMsg}
