@@ -21,17 +21,6 @@ const DEFAULT_VENUE = {
   time: "19:00",
   mapUrl: "https://maps.google.com/?q=Hotel%20l%27Acropole%20Bizerte"
 };
-const DEFAULT_DRESS_CODE = {
-  title: "Dress Code",
-  text: "Elegant attire requested. Neutral and pastel tones recommended.",
-  palette: "Beige, cream, sage green, burgundy"
-};
-const DEFAULT_PRESENTS = {
-  title: "Presents",
-  text: "Grace us with your beautiful presence and become the witness of our epic union",
-  linkLabel: "View gift list",
-  linkUrl: ""
-};
 
 function getCountdownParts(targetDateTime) {
   const target = new Date(targetDateTime).getTime();
@@ -63,8 +52,6 @@ export default function Invitation() {
   const [eventDateTime, setEventDateTime] = useState(DEFAULT_EVENT_DATE_TIME);
   const [countdown, setCountdown] = useState(ZERO_COUNTDOWN);
   const [venue, setVenue] = useState(DEFAULT_VENUE);
-  const [dressCode, setDressCode] = useState(DEFAULT_DRESS_CODE);
-  const [presents, setPresents] = useState(DEFAULT_PRESENTS);
 
   const inviteRef = useRef(null);
   const formRef = useRef(null);
@@ -164,38 +151,6 @@ export default function Invitation() {
             typeof data.venueMapUrl === "string" && data.venueMapUrl.trim()
               ? data.venueMapUrl.trim()
               : DEFAULT_VENUE.mapUrl
-        });
-        setDressCode({
-          title:
-            typeof data.dressCodeTitle === "string" && data.dressCodeTitle.trim()
-              ? data.dressCodeTitle.trim()
-              : DEFAULT_DRESS_CODE.title,
-          text:
-            typeof data.dressCodeText === "string" && data.dressCodeText.trim()
-              ? data.dressCodeText.trim()
-              : DEFAULT_DRESS_CODE.text,
-          palette:
-            typeof data.dressCodePalette === "string" && data.dressCodePalette.trim()
-              ? data.dressCodePalette.trim()
-              : DEFAULT_DRESS_CODE.palette
-        });
-        setPresents({
-          title:
-            typeof data.presentsTitle === "string" && data.presentsTitle.trim()
-              ? data.presentsTitle.trim()
-              : DEFAULT_PRESENTS.title,
-          text:
-            typeof data.presentsText === "string" && data.presentsText.trim()
-              ? data.presentsText.trim()
-              : DEFAULT_PRESENTS.text,
-          linkLabel:
-            typeof data.presentsLinkLabel === "string" && data.presentsLinkLabel.trim()
-              ? data.presentsLinkLabel.trim()
-              : DEFAULT_PRESENTS.linkLabel,
-          linkUrl:
-            typeof data.presentsLinkUrl === "string" && data.presentsLinkUrl.trim()
-              ? data.presentsLinkUrl.trim()
-              : DEFAULT_PRESENTS.linkUrl
         });
       } catch (error) {
         // Keep default datetime if settings cannot be loaded.
@@ -314,8 +269,6 @@ export default function Invitation() {
         eventDateTime={eventDateTime}
         countdown={countdown}
         venue={venue}
-        dressCode={dressCode}
-        presents={presents}
         inviteOpen={inviteOpen}
         inviteRef={inviteRef}
         formRef={formRef}
