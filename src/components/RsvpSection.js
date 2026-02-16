@@ -1,10 +1,7 @@
 export default function RsvpSection({ formRef, rsvpMsg, onSubmit }) {
   return (
     <section id="rsvp" className="block rsvp-section">
-      <h2>Confirm Your Attendance</h2>
-      <p className="rsvp-intro">
-        Reply in a few seconds to help us organize this special day.
-      </p>
+      <h2>Confirm Your Attendance</h2>  
 
       <div className="rsvp-shell">
         <form id="rsvpForm" className="form wide rsvp-form" ref={formRef} onSubmit={onSubmit}>

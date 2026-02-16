@@ -244,7 +244,7 @@ body{
 .hero{
   position:relative;
   text-align:center;
-  padding:26px 10px 40px;
+  padding:66px 10px 40px;
   display:flex;
   flex-direction:column;
   gap:18px;
