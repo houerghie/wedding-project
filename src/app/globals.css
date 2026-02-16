@@ -248,7 +248,7 @@ body{
   display:flex;
   flex-direction:column;
   gap:18px;
-  justify-content:space-between;
+  justify-content:space-evenly;
   width:100%;
   min-height:100dvh;
   overflow:hidden;
@@ -315,7 +315,7 @@ body{
   font-family:"Playfair Display", serif;
   letter-spacing:.16em;
   text-transform:uppercase;
-  font-size:.78rem;
+  font-size:1rem;
   color:rgba(255,255,255,.8);
 }
 .hero-head{
