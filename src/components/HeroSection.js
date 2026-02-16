@@ -47,18 +47,7 @@ export default function HeroSection({ guest, eventDateTime }) {
             </div>
           ))}
         </div>
-        <div className="hero-video-shell">
-          <video
-            className="hero-video"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          >
-            <source src={MAIN_HERO_VIDEO} type="video/mp4" />
-          </video>
-        </div>
+        
       </div>
       <div className="hero-overlay" aria-hidden="true"></div>
 
