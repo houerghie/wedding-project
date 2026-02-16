@@ -1,6 +1,6 @@
 ﻿const galleryVideos = [
   "/videos/024df4ac-b569-4668-8449-0e9c2e0f4d0f.mp4",
-  "/videos/1e8678ec-f42a-42b8-96ad-a97c7780b3b1.mp4",
+  "/videos/8f0801d7-fcf0-4962-868e-da81cca3b2fc.mp4",
   "/videos/86fb22c2-53a7-4184-8161-79fe63b4b32f.mp4",
   "/videos/e20a6b09-a02e-44fc-bb05-907d211c1585.mp4",
 ];
