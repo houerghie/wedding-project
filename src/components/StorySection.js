@@ -5,9 +5,7 @@ export default function StorySection({ venue }) {
     <section id="story" className="block">
       <h2>Come laugh, dance, and witness the magic unfold</h2>
       <p>
-        You&apos;re invited to witness our love bloom in the stunning backdrop of{" "}
-        {destinationName}. Please join us for a destination wedding filled with
-        joy, laughter, and cherished memories.
+        Grace us with your presence to make our day more special
       </p>
     </section>
   );
