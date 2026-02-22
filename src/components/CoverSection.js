@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const INTRO_VIDEO_SRC_MOBILE = "/landing/test1.mp4";
 const INTRO_VIDEO_SRC_LARGE = "/landing/test2.mp4";
@@ -6,18 +6,19 @@ const INTRO_TRANSITION_START_S = 1;
 
 export default function CoverSection({ isTransitioning, hasStarted, onStart, onVideoEnd }) {
   const videoRef = useRef(null);
+  const handleStartRef = useRef(() => {});
   const isStartingRef = useRef(false);
   const hasHandledErrorRef = useRef(false);
   const hasTriggeredEndRef = useRef(false);
   const [videoErrored, setVideoErrored] = useState(false);
   const [introVideoSrc, setIntroVideoSrc] = useState(INTRO_VIDEO_SRC_LARGE);
 
-  const fallbackToInvite = () => {
+  const fallbackToInvite = useCallback(() => {
     if (!hasStarted && !isTransitioning) {
       onStart();
       onVideoEnd();
     }
-  };
+  }, [hasStarted, isTransitioning, onStart, onVideoEnd]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -33,7 +34,7 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
     return () => mediaQuery.removeEventListener("change", updateSource);
   }, []);
 
-  const handleStart = () => {
+  const handleStart = useCallback(() => {
     if (hasStarted || isTransitioning || isStartingRef.current) return;
 
     const video = videoRef.current;
@@ -65,7 +66,23 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
 
     isStartingRef.current = false;
     onStart();
-  };
+  }, [fallbackToInvite, hasStarted, isTransitioning, onStart, onVideoEnd, videoErrored]);
+
+  useEffect(() => {
+    handleStartRef.current = handleStart;
+  }, [handleStart]);
+
+  useEffect(() => {
+    if (hasStarted || isTransitioning) return undefined;
+
+    const autoStartTimeout = window.setTimeout(() => {
+      handleStartRef.current();
+    }, 3000);
+
+    return () => {
+      window.clearTimeout(autoStartTimeout);
+    };
+  }, [hasStarted, isTransitioning, introVideoSrc]);
 
   const handleEnded = () => {
     if (hasTriggeredEndRef.current) return;

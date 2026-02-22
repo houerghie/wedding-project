@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -13,7 +13,7 @@ import CoverSection from "./CoverSection";
 import InviteSection from "./InviteSection";
 import { db } from "../lib/firebase";
 
-const WHITE_TRANSITION_MS = 1500;
+const WHITE_TRANSITION_MS = 700;
 const DEFAULT_EVENT_DATE_TIME = "2026-04-20T19:00";
 const ZERO_COUNTDOWN = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 const DEFAULT_VENUE = {
