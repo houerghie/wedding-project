@@ -13,7 +13,7 @@ import CoverSection from "./CoverSection";
 import InviteSection from "./InviteSection";
 import { db } from "../lib/firebase";
 
-const OPEN_DELAY_MS = 950;
+const WHITE_TRANSITION_MS = 1500;
 const DEFAULT_EVENT_DATE_TIME = "2026-04-20T19:00";
 const ZERO_COUNTDOWN = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 const DEFAULT_VENUE = {
@@ -52,9 +52,8 @@ export default function Invitation() {
   const searchParams = useSearchParams();
   const inviteId = useMemo(() => (searchParams?.get("invite") || "").trim(), [searchParams]);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpening, setIsOpening] = useState(false);
-  const [revealLetter, setRevealLetter] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [coverHidden, setCoverHidden] = useState(false);
   const [rsvpMsg, setRsvpMsg] = useState("");
@@ -68,19 +67,24 @@ export default function Invitation() {
 
   const inviteRef = useRef(null);
   const formRef = useRef(null);
+  const transitionTimeoutRef = useRef(null);
 
-  const openEnvelope = () => {
-    if (isOpening || inviteOpen) return;
-    setIsOpening(true);
-    setIsOpen(true);
+  const handleStartIntro = () => {
+    if (hasStarted || isTransitioning || inviteOpen) return;
+    setHasStarted(true);
+  };
 
-    window.setTimeout(() => {
-      setRevealLetter(true);
+  const handleIntroEnded = () => {
+    if (isTransitioning || inviteOpen) return;
+    setIsTransitioning(true);
+
+    transitionTimeoutRef.current = window.setTimeout(() => {
+      transitionTimeoutRef.current = null;
       setCoverHidden(true);
       setInviteOpen(true);
-      setIsOpening(false);
+      setIsTransitioning(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
-    }, OPEN_DELAY_MS);
+    }, WHITE_TRANSITION_MS);
   };
 
   useEffect(() => {
@@ -219,6 +223,14 @@ export default function Invitation() {
   }, [eventDateTime]);
 
   useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        window.clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (!inviteOpen) {
       document.body.classList.add("no-scroll");
     } else {
@@ -302,11 +314,10 @@ export default function Invitation() {
     <>
       {!coverHidden && (
         <CoverSection
-          guest={guest}
-          isOpening={isOpening}
-          isOpen={isOpen}
-          revealLetter={revealLetter}
-          onOpen={openEnvelope}
+          hasStarted={hasStarted}
+          isTransitioning={isTransitioning}
+          onStart={handleStartIntro}
+          onVideoEnd={handleIntroEnded}
         />
       )}
       <InviteSection

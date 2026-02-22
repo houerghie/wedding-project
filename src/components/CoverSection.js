@@ -1,58 +1,109 @@
-export default function CoverSection({
-  guest,
-  isOpening,
-  isOpen,
-  revealLetter,
-  onOpen
-}) {
-  const envelopeClass = [
-    "envelope",
-    isOpen ? "open" : "",
-    revealLetter ? "reveal-letter" : ""
-  ]
-    .filter(Boolean)
-    .join(" ");
+import { useRef, useState } from "react";
 
-  const coverClass = ["cover", isOpening ? "is-opening" : ""]
-    .filter(Boolean)
-    .join(" ");
+const INTRO_VIDEO_SRC = "/landing/test1.mov";
+
+export default function CoverSection({ isTransitioning, hasStarted, onStart, onVideoEnd }) {
+  const videoRef = useRef(null);
+  const isStartingRef = useRef(false);
+  const hasHandledErrorRef = useRef(false);
+  const [videoErrored, setVideoErrored] = useState(false);
+
+  const handleStart = () => {
+    if (hasStarted || isTransitioning || isStartingRef.current) return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (videoErrored) {
+      onStart();
+      onVideoEnd();
+      return;
+    }
+
+    isStartingRef.current = true;
+
+    const playAttempt = video.play();
+    if (playAttempt && typeof playAttempt.catch === "function") {
+      playAttempt
+        .then(() => {
+          isStartingRef.current = false;
+          onStart();
+        })
+        .catch((error) => {
+          isStartingRef.current = false;
+          console.error("Intro video playback failed.", error);
+        });
+      return;
+    }
+
+    isStartingRef.current = false;
+    onStart();
+  };
+
+  const handleEnded = () => {
+    isStartingRef.current = false;
+    onVideoEnd();
+  };
+
+  const handleError = () => {
+    if (hasHandledErrorRef.current) return;
+    hasHandledErrorRef.current = true;
+    isStartingRef.current = false;
+    setVideoErrored(true);
+
+    if (!hasStarted && !isTransitioning) {
+      onStart();
+      onVideoEnd();
+    }
+  };
+
+  const handleLoadedData = () => {
+    const video = videoRef.current;
+    if (!video || hasStarted) return;
+    if (video.currentTime > 0) return;
+
+    try {
+      video.currentTime = 0.01;
+      video.pause();
+    } catch {
+      // Browsers that block timeline seek here can safely ignore this.
+    }
+  };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      onOpen();
+      handleStart();
     }
   };
 
+  const coverClass = ["cover", isTransitioning ? "is-transitioning" : ""]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <section id="cover" className={coverClass} aria-label="Invitation cover">
+    <section id="cover" className={coverClass} aria-label="Invitation intro video">
       <div
-        className={envelopeClass}
-        id="envelope"
+        className="intro-video-shell"
         role="button"
         tabIndex={0}
-        aria-label="Open invitation"
-        onClick={onOpen}
+        aria-label="Play intro video"
+        onClick={handleStart}
         onKeyDown={handleKeyDown}
       >
-        <div className="env-back"></div>
-        <div className="env-flap" id="flap"></div>
-        <div className="env-flap env-flap-bottom" aria-hidden="true"></div>
-
-        <div className="env-letter" id="letter">
-          <div className="letter-top">
-            <div className="mono">M - U</div>
-            <div className="sub">This invitation is exclusively reserved for you</div>
-            <div className="guest" id="guestName">
-              {guest}
-            </div>
-          </div>
-        </div>
-
-        <div className="seal" aria-hidden="true"></div>
+        <video
+          ref={videoRef}
+          className="intro-video"
+          muted
+          playsInline
+          preload="auto"
+          onEnded={handleEnded}
+          onLoadedData={handleLoadedData}
+          onError={handleError}
+        >
+          <source src={INTRO_VIDEO_SRC} />
+        </video>
       </div>
-
-      <p className="hint">Tap the envelope to open</p>
     </section>
   );
 }
