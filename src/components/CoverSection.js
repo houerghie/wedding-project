@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const INTRO_VIDEO_SRC = "/landing/test1.mov";
+const INTRO_VIDEO_SRC_MOBILE = "/landing/test1.mov";
+const INTRO_VIDEO_SRC_LARGE = "/landing/test2.mov";
 const INTRO_TRANSITION_START_S = 1;
 
 export default function CoverSection({ isTransitioning, hasStarted, onStart, onVideoEnd }) {
@@ -9,6 +10,21 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
   const hasHandledErrorRef = useRef(false);
   const hasTriggeredEndRef = useRef(false);
   const [videoErrored, setVideoErrored] = useState(false);
+  const [introVideoSrc, setIntroVideoSrc] = useState(INTRO_VIDEO_SRC_LARGE);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateSource = (event) => {
+      setIntroVideoSrc(event.matches ? INTRO_VIDEO_SRC_MOBILE : INTRO_VIDEO_SRC_LARGE);
+    };
+
+    updateSource(mediaQuery);
+    mediaQuery.addEventListener("change", updateSource);
+
+    return () => mediaQuery.removeEventListener("change", updateSource);
+  }, []);
 
   const handleStart = () => {
     if (hasStarted || isTransitioning || isStartingRef.current) return;
@@ -108,6 +124,7 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
         onKeyDown={handleKeyDown}
       >
         <video
+          key={introVideoSrc}
           ref={videoRef}
           className="intro-video"
           muted
@@ -118,7 +135,7 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
           onLoadedData={handleLoadedData}
           onError={handleError}
         >
-          <source src={INTRO_VIDEO_SRC} />
+          <source src={introVideoSrc} />
         </video>
       </div>
     </section>
