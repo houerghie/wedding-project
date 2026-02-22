@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-const INTRO_VIDEO_SRC_MOBILE = "/landing/test1.mov";
-const INTRO_VIDEO_SRC_LARGE = "/landing/test2.mov";
+const INTRO_VIDEO_SRC_MOBILE = "/landing/test1.mp4";
+const INTRO_VIDEO_SRC_LARGE = "/landing/test2.mp4";
 const INTRO_TRANSITION_START_S = 1;
 
 export default function CoverSection({ isTransitioning, hasStarted, onStart, onVideoEnd }) {
@@ -11,6 +11,13 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
   const hasTriggeredEndRef = useRef(false);
   const [videoErrored, setVideoErrored] = useState(false);
   const [introVideoSrc, setIntroVideoSrc] = useState(INTRO_VIDEO_SRC_LARGE);
+
+  const fallbackToInvite = () => {
+    if (!hasStarted && !isTransitioning) {
+      onStart();
+      onVideoEnd();
+    }
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -50,6 +57,8 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
         .catch((error) => {
           isStartingRef.current = false;
           console.error("Intro video playback failed.", error);
+          setVideoErrored(true);
+          fallbackToInvite();
         });
       return;
     }
@@ -70,11 +79,7 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
     hasHandledErrorRef.current = true;
     isStartingRef.current = false;
     setVideoErrored(true);
-
-    if (!hasStarted && !isTransitioning) {
-      onStart();
-      onVideoEnd();
-    }
+    fallbackToInvite();
   };
 
   const handleLoadedData = () => {
@@ -135,7 +140,7 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
           onLoadedData={handleLoadedData}
           onError={handleError}
         >
-          <source src={introVideoSrc} />
+          <source src={introVideoSrc} type="video/mp4" />
         </video>
       </div>
     </section>
