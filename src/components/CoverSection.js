@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 
 const INTRO_VIDEO_SRC = "/landing/test1.mov";
+const INTRO_TRANSITION_START_S = 1;
 
 export default function CoverSection({ isTransitioning, hasStarted, onStart, onVideoEnd }) {
   const videoRef = useRef(null);
   const isStartingRef = useRef(false);
   const hasHandledErrorRef = useRef(false);
+  const hasTriggeredEndRef = useRef(false);
   const [videoErrored, setVideoErrored] = useState(false);
 
   const handleStart = () => {
@@ -41,6 +43,8 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
   };
 
   const handleEnded = () => {
+    if (hasTriggeredEndRef.current) return;
+    hasTriggeredEndRef.current = true;
     isStartingRef.current = false;
     onVideoEnd();
   };
@@ -67,6 +71,18 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
       video.pause();
     } catch {
       // Browsers that block timeline seek here can safely ignore this.
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (hasTriggeredEndRef.current) return;
+
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+
+    if (video.currentTime >= INTRO_TRANSITION_START_S) {
+      hasTriggeredEndRef.current = true;
+      onVideoEnd();
     }
   };
 
@@ -98,6 +114,7 @@ export default function CoverSection({ isTransitioning, hasStarted, onStart, onV
           playsInline
           preload="auto"
           onEnded={handleEnded}
+          onTimeUpdate={handleTimeUpdate}
           onLoadedData={handleLoadedData}
           onError={handleError}
         >
